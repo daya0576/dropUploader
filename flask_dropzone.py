@@ -89,7 +89,7 @@ Dropzone.options.myDropzone = {
   dictResponseError: "%s",
   dictMaxFilesExceeded: "%s",
 
-  clickable: "%i"
+  clickable: %s,
 
   // renameFilename: cleanFilename,
 };

@@ -16,7 +16,7 @@ app.config.update(
     DROPZONE_MAX_FILE_SIZE=3,
     DROPZONE_INPUT_NAME='photo',
     DROPZONE_MAX_FILES=30,
-    DROPZONE_CLICKABLE=False
+    DROPZONE_CLICKABLE='false'
 )
 
 # set the route
@@ -29,5 +29,5 @@ def upload():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    app.run(host='localhost', port=9393)
+    app.run(debug=True)
+    # app.run(host='localhost', port=9393)
