@@ -12,12 +12,11 @@ allowed_file_type = {
 }
 
 
+# static
 class _Dropzone(object):
-
     @staticmethod
     def load(version='5.1.1'):
         """Load Dropzone resources with given version and init dropzone configuration.
-
         :param version: The version of Dropzone.js.
         """
         js_filename = 'dropzone.min.js'
@@ -56,6 +55,7 @@ class _Dropzone(object):
         server_error = current_app.config['DROPZONE_SERVER_ERROR']
         browser_unsupported = current_app.config['DROPZONE_BROWSER_UNSUPPORTED']
         max_files_exceeded = current_app.config['DROPZONE_MAX_FILE_EXCEED']
+        clickable = current_app.config['DROPZONE_CLICKABLE']
 
         # for the local
         if serve_local:
@@ -72,6 +72,7 @@ class _Dropzone(object):
 // var cleanFilename = function (name) {
 //    return name.toLowerCase().replace(/[^\w]/gi, '');
 // };
+
 Dropzone.options.myDropzone = {
   init: function() {%s},
   uploadMultiple: %s,
@@ -80,18 +81,22 @@ Dropzone.options.myDropzone = {
   maxFilesize: %d, // MB
   acceptedFiles: "%s",
   maxFiles: %s,
+
   dictDefaultMessage: "%s", // message display on drop area
   dictFallbackMessage: "%s",
   dictInvalidFileType: "%s",
   dictFileTooBig: "%s",
   dictResponseError: "%s",
   dictMaxFilesExceeded: "%s",
+
+  clickable: "%i"
+
   // renameFilename: cleanFilename,
 };
         </script>
         ''' % (css, js, redirect_js, upload_multiple, parallel_uploads, param, size, allowed_type, max_files,
                default_message, browser_unsupported, invalid_file_type, file_too_big,
-               server_error, max_files_exceeded))
+               server_error, max_files_exceeded, clickable))
 
     @staticmethod
     def create(action_view='', **kwargs):
@@ -111,18 +116,19 @@ Dropzone.options.myDropzone = {
         return Markup('<style>\n.dropzone{%s}\n</style>'% css)
 
 
+# initialization
 class Dropzone(object):
     def __init__(self, app=None):
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app):
-
         blueprint = Blueprint('dropzone', __name__)
         app.register_blueprint(blueprint)
 
         if not hasattr(app, 'extensions'):
             app.extesions = {}
+
         app.extensions['dropzone'] = _Dropzone
         app.context_processor(self.context_processor)
 
@@ -133,7 +139,7 @@ class Dropzone(object):
         app.config.setdefault('DROPZONE_ALLOWED_FILE_CUSTOM', False)
         app.config.setdefault('DROPZONE_ALLOWED_FILE_TYPE', 'default')
         app.config.setdefault('DROPZONE_MAX_FILES', 'null')
-        
+
         # The view to redierct when upload was completed.
         app.config.setdefault('DROPZONE_REDIRECT_VIEW', None)
         
@@ -150,15 +156,17 @@ class Dropzone(object):
         # messages
         app.config.setdefault('DROPZONE_DEFAULT_MESSAGE', "Drop files here to upload")
         app.config.setdefault('DROPZONE_INVALID_FILE_TYPE', "You can't upload files of this type.")
-        app.config.setdefault('DROPZONE_FILE_TOO_BIG',
-                              "File is too big {{filesize}}. Max filesize: {{maxFilesize}}MiB.")
+        app.config.setdefault('DROPZONE_FILE_TOO_BIG', "File is too big {{filesize}}. Max filesize: {{maxFilesize}}MiB.")
         app.config.setdefault('DROPZONE_SERVER_ERROR', "Server error: {{statusCode}}")
-        app.config.setdefault('DROPZONE_BROWSER_UNSUPPORTED',
-                              "Your browser does not support drag'n'drop file uploads.")
+
+        app.config.setdefault('DROPZONE_BROWSER_UNSUPPORTED', "Your browser does not support drag'n'drop file uploads.")
+
         app.config.setdefault('DROPZONE_MAX_FILE_EXCEED', "Your can't upload any more files.")
+        app.config.setdefault('DROPZONE_CLICKABLE', "false")
 
     @staticmethod
     def context_processor():
         return {
             'dropzone': current_app.extensions['dropzone']
         }
+

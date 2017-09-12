@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Flask-Dropzone Demo</title>
   {{ dropzone.load() }}
   {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') }}
 </head>
+
 <body>
   {{ dropzone.create(action_view='upload') }}
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </body>
+
 </html>
